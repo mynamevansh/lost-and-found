@@ -8,9 +8,10 @@
 </head>
 <body>
     <div class="container">
-        <a href="#" class="lost" onclick="redirectWithDelay('lost.html')">Lost</a>
-        <a href="#" class="found" onclick="redirectWithDelay('found.html')">Found</a>
-    </div>
+        <a href="#" class="lost" onclick="navigateWithLoader('lost.html')">Lost</a>
+        <a href="#" class="found" onclick="navigateWithLoader('found.html')">Found</a>
+
+    </div>    
 
     <div id="loading-screen" class="loading-screen hidden">
         <div class="loader"></div>

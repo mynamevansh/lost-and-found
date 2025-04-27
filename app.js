@@ -21,17 +21,11 @@ for (let i = 0; i < shootingStarCount; i++) {
     body.appendChild(shootingStar);
 }
 
-function redirectWithDelay(url) {
+function navigateWithLoader(url) {
     const loadingScreen = document.getElementById('loading-screen');
     loadingScreen.classList.remove('hidden');
+
     setTimeout(() => {
         window.location.href = url;
     }, 2000);
-} 
-
-window.addEventListener('load', () => {
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-        loadingScreen.classList.add('hidden');
-    }
-});
+}
