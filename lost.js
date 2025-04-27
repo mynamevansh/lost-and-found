@@ -1,5 +1,5 @@
 const starCount = 100;
-const shootingStarCount = 15;
+const shootingStarCount = 45;
 const body = document.body;
 
 
@@ -22,3 +22,4 @@ for (let i = 0; i < shootingStarCount; i++) {
     shootingStar.style.animationDuration = Math.random() * 2 + 1 + 's';
     body.appendChild(shootingStar);
 }
+

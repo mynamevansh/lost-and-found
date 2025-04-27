@@ -28,3 +28,10 @@ function redirectWithDelay(url) {
         window.location.href = url;
     }, 2000);
 } 
+
+window.addEventListener('load', () => {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('hidden');
+    }
+});

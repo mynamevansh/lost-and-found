@@ -37,7 +37,7 @@ const signUpForm = document.getElementById("signUpForm");
 const signInForm = document.getElementById("signInForm");
 
 function showLoadingAndRedirect(url) {
-    loadingScreen.classList.remove("hidden");
+    loadingScreen.classList.remove("hidden"); 
     setTimeout(() => {
         window.location.href = url;
     }, 3000);
