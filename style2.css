@@ -18,8 +18,8 @@ body {
 
 .star {
     position: absolute;
-    width: 2px;
-    height: 2px;
+    width: 3px;
+    height: 3px;
     background: white;
     border-radius: 50%;
     animation: twinkle 1s infinite ease-in-out;
@@ -30,7 +30,7 @@ body {
         opacity: 0.5;
     }
     50% {
-        opacity: 1;
+        opacity: 2;
     }
 }
 
@@ -84,6 +84,7 @@ a {
     align-items: center;
     z-index: 10;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: pulse 2s infinite;
 }
 
 .found {
@@ -103,10 +104,6 @@ a {
     50% {
         transform: scale(1.05);
     }
-}
-
-.lost, .found {
-    animation: pulse 2s infinite;
 }
 
 .loading-screen {

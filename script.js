@@ -1,5 +1,5 @@
 const starCount = 100;
-const shootingStarCount = 5;
+const shootingStarCount = 45;
 const body = document.body;
 
 for (let i = 0; i < starCount; i++) {
