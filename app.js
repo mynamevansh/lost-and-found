@@ -31,7 +31,7 @@ function redirectWithDelay(url) {
 
 window.addEventListener('load', () => {
     const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
+    if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
         loadingScreen.classList.add('hidden');
     }
 });
