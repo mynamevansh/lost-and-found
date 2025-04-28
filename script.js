@@ -21,34 +21,35 @@ for (let i = 0; i < shootingStarCount; i++) {
 }
 
 const container = document.getElementById("container");
-const signUpButton = document.getElementById("signUp");
-const signInButton = document.getElementById("signIn");
-
-signUpButton.addEventListener("click", () => {
+document.getElementById("signUp").addEventListener("click", () => {
     container.classList.add("active");
 });
-
-signInButton.addEventListener("click", () => {
+document.getElementById("signIn").addEventListener("click", () => {
     container.classList.remove("active");
 });
 
 const loadingScreen = document.getElementById("loading-screen");
-const signUpForm = document.getElementById("signUpForm");
-const signInForm = document.getElementById("signInForm");
 
-function showLoadingAndRedirect(url) {
-    loadingScreen.classList.remove("hidden"); 
-    setTimeout(() => {
-        window.location.href = url;
-    }, 3000);
-}
 
-signUpForm.addEventListener("submit", (e) => {
+
+document.getElementById("signUpForm").addEventListener("submit", (e) => {
     e.preventDefault();
     showLoadingAndRedirect("main.html");
 });
 
-signInForm.addEventListener("submit", (e) => {
+document.getElementById("signInForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    showLoadingAndRedirect("main.html");
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (email === "vansh@gmail.com" && password === "0000") {
+        loadingScreen.classList.remove("hidden");
+        setTimeout(() => {
+            window.location.href = "main.html";
+        }, 3000);
+    } else {
+        alert("Invalid email or password. Please try again.");
+        location.reload();
+    }
 });
