@@ -28,15 +28,12 @@ document.getElementById("signIn").addEventListener("click", () => {
     container.classList.remove("active");
 });
 
-const loadingScreen = document.getElementById("loading-screen");
-
-
-
 document.getElementById("signUpForm").addEventListener("submit", (e) => {
     e.preventDefault();
     showLoadingAndRedirect("main.html");
 });
 
+const loadingScreen = document.getElementById("loading-screen");
 document.getElementById("signInForm").addEventListener("submit", (e) => {
     e.preventDefault();
 
