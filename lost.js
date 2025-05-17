@@ -2,7 +2,6 @@ const starCount = 100;
 const shootingStarCount = 45;
 const body = document.body;
 
-
 for (let i = 0; i < starCount; i++) {
     const star = document.createElement('div');
     star.classList.add('star');
@@ -11,7 +10,6 @@ for (let i = 0; i < starCount; i++) {
     star.style.animationDuration = Math.random() * 1.5 + 0.5 + 's';
     body.appendChild(star);
 }
-
 
 for (let i = 0; i < shootingStarCount; i++) {
     const shootingStar = document.createElement('div');
@@ -22,9 +20,6 @@ for (let i = 0; i < shootingStarCount; i++) {
     shootingStar.style.animationDuration = Math.random() * 2 + 1 + 's';
     body.appendChild(shootingStar);
 }
-
-
-
 
 let boxCount = document.querySelectorAll('.lost-container .box').length + 1;
 
