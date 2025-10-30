@@ -9,4 +9,4 @@ const lostItemSchema = new mongoose.Schema({
   imageUrl: String
 }, { timestamps: true });
 
-module.exports = mongoose.model('LostItem', lostItemSchema);
+module.exports = mongoose.model('LostItem', lostItemSchema, 'lost-items');

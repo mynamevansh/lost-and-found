@@ -22,10 +22,7 @@
             <form id="signUpForm">
                 <h1>Create Account</h1>
                 <div class="social-icons" aria-label="social sign in options">
-                    <a href="#" class="icon google" role="button" aria-label="Sign in with Google" data-provider="google" tabindex="0"></a>
-                    <a href="#" class="icon linkedin" role="button" aria-label="Sign in with LinkedIn" data-provider="linkedin" tabindex="0"></a>
-                    <a href="#" class="icon github" role="button" aria-label="Sign in with GitHub" data-provider="github" tabindex="0"></a>
-                    <a href="#" class="icon facebook" role="button" aria-label="Sign in with Facebook" data-provider="facebook" tabindex="0"></a>
+                    <a href="#" id="googleSignUp" class="icon google" role="button" aria-label="Sign in with Google" data-provider="google" tabindex="0"></a>
                 </div>
                 <span>or use your email for registration</span>
                 <input type="text" id="signupName" placeholder="Name" required autocomplete="name">
@@ -42,10 +39,7 @@
                     <h1>Sign In</h1>
                 </div>
                 <div class="social-icons" aria-label="social sign in options">
-                    <a href="#" class="icon google" role="button" aria-label="Sign in with Google" data-provider="google" tabindex="0"></a>
-                    <a href="#" class="icon linkedin" role="button" aria-label="Sign in with LinkedIn" data-provider="linkedin" tabindex="0"></a>
-                    <a href="#" class="icon github" role="button" aria-label="Sign in with GitHub" data-provider="github" tabindex="0"></a>
-                    <a href="#" class="icon facebook" role="button" aria-label="Sign in with Facebook" data-provider="facebook" tabindex="0"></a>
+                    <a href="#" id="googleSignIn" class="icon google" role="button" aria-label="Sign in with Google" data-provider="google" tabindex="0"></a>
                 </div>
                 <span>or use your email password</span>
                 <input type="email" id="email" placeholder="Email" required autocomplete="email">
@@ -71,55 +65,191 @@
         </div>
     </div>
 
-    <!-- Google Identity Services Script -->
+    <!-- Google Identity Services Script - Load BEFORE your script -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     
-    <!-- Your app script -->
-    <script src="js/script.js"></script>
-
     <!-- Google Identity Configuration -->
     <script>
         window.GOOGLE_CLIENT_ID = "488982088796-tn18otp49ta7qju1cm93bmd187d4eiab.apps.googleusercontent.com";
         
-        // Global callback for Google Sign-In
-        window.handleGoogleSignIn = async function(response) {
+        // Global callback for credential response
+        function handleCredentialResponse(response) {
             if (!response?.credential) {
-                console.warn('No credential returned by Google');
+                console.error('❌ No credential returned by Google');
+                alert('Google Sign-In failed. Please try again.');
                 return;
             }
             
-            try {
-                const res = await fetch('http://localhost:5000/api/users/google-login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: response.credential })
-                });
-                
-                const data = await res.json();
-                
-                if (res.ok) {
+            console.log('✅ Google ID Token received:', response.credential.substring(0, 30) + '...');
+            console.log('📤 Sending token to backend for verification...');
+            
+            // Send token to backend for verification
+            fetch('http://localhost:5000/api/users/google-login', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ token: response.credential })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Backend returned ${res.status}: ${res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.token) {
+                    console.log('✅ Backend authentication successful');
+                    console.log('👤 User:', data.name);
                     localStorage.setItem('userToken', data.token);
                     localStorage.setItem('userName', data.name);
+                    localStorage.setItem('userEmail', data.email);
+                    console.log('🔄 Redirecting to main.html...');
                     window.location.href = 'main.html';
                 } else {
-                    alert(data.message || 'Google sign-in failed');
+                    console.error('❌ Backend error:', data.message);
+                    alert(data.message || 'Google sign-in failed on backend');
                 }
-            } catch (err) {
-                console.error('Google sign-in error:', err);
-                alert('Network error during Google sign-in');
-            }
-        };
+            })
+            .catch(err => {
+                console.error('❌ Network error during Google sign-in:', err);
+                alert('Network error: ' + err.message + '\n\nMake sure backend server is running on port 5000');
+            });
+        }
 
-        // Prevent auto-prompts on page load
-        window.addEventListener('load', () => {
-            if (window.google && google.accounts) {
-                try {
-                    google.accounts.id.disableAutoSelect();
-                } catch (err) {
-                    console.log('Auto-select already disabled or not available');
+        // Initialize Google Sign-In when window loads
+        window.onload = function() {
+            console.log('🔄 Initializing Google Sign-In...');
+            console.log('🌐 Current URL:', window.location.href);
+            console.log('📍 Origin:', window.location.origin);
+            console.log('');
+            console.log('⚠️ ⚠️ ⚠️  IMPORTANT - GOOGLE CLOUD CONSOLE SETUP  ⚠️ ⚠️ ⚠️');
+            console.log('');
+            console.log('🔗 Go to: https://console.cloud.google.com/apis/credentials');
+            console.log('');
+            console.log('📝 Click on your OAuth 2.0 Client ID:');
+            console.log('   488982088796-tn18otp49ta7qju1cm93bmd187d4eiab');
+            console.log('');
+            console.log('✅ Under "Authorized JavaScript origins", add THESE EXACT URLs:');
+            console.log('   1. ' + window.location.origin);
+            console.log('   2. http://localhost:5500');
+            console.log('   3. http://127.0.0.1:5500');
+            console.log('   4. http://localhost');
+            console.log('   5. http://127.0.0.1');
+            console.log('');
+            console.log('💾 Click SAVE and WAIT 5-10 minutes for changes to take effect');
+            console.log('');
+            console.log('🔄 Then refresh this page (Ctrl+R) and try again');
+            console.log('════════════════════════════════════════════════════════════');
+            
+            // Wait for Google Identity Services to load
+            let checkAttempts = 0;
+            const maxAttempts = 100; // 10 seconds total
+            
+            const checkGoogleLoaded = setInterval(() => {
+                checkAttempts++;
+                
+                if (window.google && google.accounts && google.accounts.id) {
+                    clearInterval(checkGoogleLoaded);
+                    
+                    try {
+                        // Initialize Google Identity Services
+                        google.accounts.id.initialize({
+                            client_id: window.GOOGLE_CLIENT_ID,
+                            callback: handleCredentialResponse,
+                            auto_select: false,
+                            cancel_on_tap_outside: true,
+                            ux_mode: 'popup',
+                            context: 'signin'
+                        });
+                        
+                        console.log('✅ Google Sign-In initialized successfully');
+                        console.log('📋 Client ID:', window.GOOGLE_CLIENT_ID.substring(0, 30) + '...');
+                        
+                        // Create invisible container for rendering button programmatically
+                        const hiddenContainer = document.createElement('div');
+                        hiddenContainer.id = 'g_id_signin_container';
+                        hiddenContainer.style.display = 'none';
+                        document.body.appendChild(hiddenContainer);
+                        
+                        // Render the button (hidden) to enable proper OAuth flow
+                        google.accounts.id.renderButton(
+                            hiddenContainer,
+                            { 
+                                theme: 'outline',
+                                size: 'large',
+                                type: 'standard',
+                                text: 'signin_with'
+                            }
+                        );
+                        
+                        console.log('✅ Google button rendered (hidden)');
+                        
+                        // Attach click handlers to all Google logo elements
+                        const googleLogos = document.querySelectorAll('.icon.google');
+                        
+                        if (googleLogos.length === 0) {
+                            console.warn('⚠️ No Google logo elements found with class "icon google"');
+                        }
+                        
+                        googleLogos.forEach((logo, index) => {
+                            logo.style.cursor = 'pointer';
+                            logo.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                console.log(`🖱️ Google logo ${index + 1} clicked - Triggering sign-in...`);
+                                
+                                // Click the hidden Google button to trigger the OAuth flow
+                                const googleButton = hiddenContainer.querySelector('[role="button"]');
+                                if (googleButton) {
+                                    console.log('🔘 Triggering hidden Google button...');
+                                    googleButton.click();
+                                } else {
+                                    console.warn('⚠️ Hidden button not found, using prompt() fallback');
+                                    // Fallback to prompt if button not found
+                                    google.accounts.id.prompt((notification) => {
+                                        if (notification.isNotDisplayed()) {
+                                            const reason = notification.getNotDisplayedReason();
+                                            console.error('❌ Prompt not displayed. Reason:', reason);
+                                            
+                                            if (reason === 'suppressed_by_user') {
+                                                alert('You previously dismissed Google Sign-In.\n\nSolution: Clear browser cookies or use incognito mode (Ctrl+Shift+N)');
+                                            } else if (reason === 'unregistered_origin') {
+                                                alert('Origin not authorized.\n\nAdd these to Google Cloud Console:\n• ' + window.location.origin + '\n• http://localhost:5500\n• http://127.0.0.1:5500');
+                                            } else {
+                                                alert('Google Sign-In was blocked.\n\nReason: ' + reason + '\n\nTry: Allow popups or use incognito mode');
+                                            }
+                                        } else if (notification.isSkippedMoment()) {
+                                            console.log('⏭️ User closed the sign-in dialog');
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                        
+                        console.log('✅ Click handlers attached to', googleLogos.length, 'Google logo(s)');
+                        console.log('💡 Ready! Click the Google logo to sign in.');
+                        console.log('ℹ️  Using renderButton() approach to avoid FedCM errors');
+                        
+                    } catch (err) {
+                        console.error('❌ Failed to initialize Google Sign-In:', err);
+                        console.error('Error details:', err.message);
+                        console.error('Stack:', err.stack);
+                    }
+                } else if (checkAttempts >= maxAttempts) {
+                    clearInterval(checkGoogleLoaded);
+                    console.error('❌ Google Identity Services failed to load after 10 seconds');
+                    console.error('Possible causes:');
+                    console.error('  • Network connectivity issue');
+                    console.error('  • Ad blocker blocking Google scripts');
+                    console.error('  • CORS or CSP restrictions');
+                    alert('Google Sign-In script failed to load.\n\nCheck:\n• Internet connection\n• Ad blockers\n• Browser console for errors');
                 }
-            }
-        });
+            }, 100);
+        };
     </script>
+    
+    <!-- Your app script -->
+    <script src="js/script.js"></script>
 </body>
 </html>

@@ -9,4 +9,4 @@ const foundItemSchema = new mongoose.Schema({
     imageUrl: String
 }, { timestamps: true });
 
-module.exports = mongoose.model('FoundItem', foundItemSchema);
+module.exports = mongoose.model('FoundItem', foundItemSchema, 'found-items');

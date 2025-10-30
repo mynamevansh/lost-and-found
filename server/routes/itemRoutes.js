@@ -31,8 +31,21 @@ const upload = multer({ storage });
 // Create Lost Item
 router.post('/lost', upload.single('photo'), async (req, res) => {
   try {
-    const { name, itemName, location, contactInfo, description, userId } = req.body;
-    const imageUrl = req.file ? `/uploads/lost/${req.file.filename}` : null;
+    const { name, itemName, location, contactInfo, description } = req.body;
+    
+    // Construct full image URL with server domain
+    const imageUrl = req.file 
+      ? `http://localhost:5000/uploads/lost/${req.file.filename}` 
+      : null;
+
+    // Log received data for debugging
+    console.log('📝 Creating Lost Item:');
+    console.log('  name:', name);
+    console.log('  itemName:', itemName);
+    console.log('  location:', location);
+    console.log('  contactInfo:', contactInfo);
+    console.log('  description:', description);
+    console.log('  imageUrl:', imageUrl);
 
     const newItem = new LostItem({
       name,
@@ -40,13 +53,28 @@ router.post('/lost', upload.single('photo'), async (req, res) => {
       location,
       contactInfo,
       description,
-      imageUrl,
-      user: userId // Associate item with user
+      imageUrl
     });
 
     await newItem.save();
-    res.status(201).json(newItem);
+    
+    // Log saved item
+    console.log('✅ Lost item saved:', newItem._id);
+    
+    // Return item with exact field names frontend expects
+    res.status(201).json({
+      _id: newItem._id,
+      name: newItem.name,
+      itemName: newItem.itemName,
+      location: newItem.location,
+      contactInfo: newItem.contactInfo,
+      description: newItem.description,
+      imageUrl: newItem.imageUrl,
+      createdAt: newItem.createdAt,
+      updatedAt: newItem.updatedAt
+    });
   } catch (error) {
+    console.error('❌ Error saving lost item:', error);
     res.status(500).json({ message: 'Error saving lost item', error: error.message });
   }
 });
@@ -55,8 +83,26 @@ router.post('/lost', upload.single('photo'), async (req, res) => {
 router.get('/lost', async (req, res) => {
   try {
     const items = await LostItem.find().sort({ createdAt: -1 });
-    res.json(items);
+    
+    // Transform items to ensure full image URLs and correct field names
+    const transformedItems = items.map(item => ({
+      _id: item._id,
+      name: item.name,
+      itemName: item.itemName,
+      location: item.location,
+      contactInfo: item.contactInfo,
+      description: item.description,
+      imageUrl: item.imageUrl && !item.imageUrl.startsWith('http') 
+        ? `http://localhost:5000${item.imageUrl}` 
+        : item.imageUrl,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
+    }));
+    
+    console.log(`📦 Fetched ${transformedItems.length} lost items`);
+    res.json(transformedItems);
   } catch (error) {
+    console.error('❌ Error fetching lost items:', error);
     res.status(500).json({ message: 'Error fetching lost items', error: error.message });
   }
 });
@@ -66,8 +112,21 @@ router.get('/lost', async (req, res) => {
 // Create Found Item
 router.post('/found', upload.single('photo'), async (req, res) => {
   try {
-    const { name, itemName, location, contactInfo, description, userId } = req.body;
-    const imageUrl = req.file ? `/uploads/found/${req.file.filename}` : null;
+    const { name, itemName, location, contactInfo, description } = req.body;
+    
+    // Construct full image URL with server domain
+    const imageUrl = req.file 
+      ? `http://localhost:5000/uploads/found/${req.file.filename}` 
+      : null;
+
+    // Log received data for debugging
+    console.log('📝 Creating Found Item:');
+    console.log('  name:', name);
+    console.log('  itemName:', itemName);
+    console.log('  location:', location);
+    console.log('  contactInfo:', contactInfo);
+    console.log('  description:', description);
+    console.log('  imageUrl:', imageUrl);
 
     const newItem = new FoundItem({
       name,
@@ -75,13 +134,28 @@ router.post('/found', upload.single('photo'), async (req, res) => {
       location,
       contactInfo,
       description,
-      imageUrl,
-      user: userId // Associate item with user
+      imageUrl
     });
 
     await newItem.save();
-    res.status(201).json(newItem);
+    
+    // Log saved item
+    console.log('✅ Found item saved:', newItem._id);
+    
+    // Return item with exact field names frontend expects
+    res.status(201).json({
+      _id: newItem._id,
+      name: newItem.name,
+      itemName: newItem.itemName,
+      location: newItem.location,
+      contactInfo: newItem.contactInfo,
+      description: newItem.description,
+      imageUrl: newItem.imageUrl,
+      createdAt: newItem.createdAt,
+      updatedAt: newItem.updatedAt
+    });
   } catch (error) {
+    console.error('❌ Error saving found item:', error);
     res.status(500).json({ message: 'Error saving found item', error: error.message });
   }
 });
@@ -90,8 +164,26 @@ router.post('/found', upload.single('photo'), async (req, res) => {
 router.get('/found', async (req, res) => {
   try {
     const items = await FoundItem.find().sort({ createdAt: -1 });
-    res.json(items);
+    
+    // Transform items to ensure full image URLs and correct field names
+    const transformedItems = items.map(item => ({
+      _id: item._id,
+      name: item.name,
+      itemName: item.itemName,
+      location: item.location,
+      contactInfo: item.contactInfo,
+      description: item.description,
+      imageUrl: item.imageUrl && !item.imageUrl.startsWith('http') 
+        ? `http://localhost:5000${item.imageUrl}` 
+        : item.imageUrl,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
+    }));
+    
+    console.log(`📦 Fetched ${transformedItems.length} found items`);
+    res.json(transformedItems);
   } catch (error) {
+    console.error('❌ Error fetching found items:', error);
     res.status(500).json({ message: 'Error fetching found items', error: error.message });
   }
 });

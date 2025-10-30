@@ -18,23 +18,23 @@
     <form class="found-form" id="foundForm" enctype="multipart/form-data">
       <h2>Report a Found Item</h2>
 
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required />
+      <label for="name">Finder Name:</label>
+      <input type="text" id="name" name="name" placeholder="Your name" required />
 
       <label for="itemName">Item Found:</label>
-      <input type="text" id="itemName" name="itemName" required />
+      <input type="text" id="itemName" name="itemName" placeholder="e.g., Blue Backpack, iPhone 13" required />
 
-      <label for="location">Last Seen:</label>
-      <input type="text" id="location" name="location" required />
+      <label for="location">Found Location:</label>
+      <input type="text" id="location" name="location" placeholder="e.g., Library 3rd Floor, Parking Lot B" required />
 
       <label for="contactInfo">Contact Info:</label>
-      <input type="text" id="contactInfo" name="contactInfo" required />
+      <input type="text" id="contactInfo" name="contactInfo" placeholder="Email or phone number" required />
 
       <label for="photo">Upload Photo:</label>
       <input type="file" id="photo" name="photo" accept="image/*" />
 
       <label for="description">Description:</label>
-      <textarea id="description" name="description" rows="4" required></textarea>
+      <textarea id="description" name="description" rows="4" placeholder="Describe the item, condition, distinguishing features..." required></textarea>
 
       <button type="submit">Submit</button>
     </form>
