@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:,">
+    <title>Login Page</title>
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="shooting-stars"></div>
+
+    <div id="loading-screen" class="loading-screen hidden">
+        <div class="loader"></div>
+        <h1 id="load">Loading...</h1>
+    </div>
+
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form id="signUpForm">
+                <h1>Create Account</h1>
+                <div class="social-icons" aria-label="social sign in options">
+                    <a href="#" class="icon google" role="button" aria-label="Sign in with Google" data-provider="google" tabindex="0"></a>
+                    <a href="#" class="icon linkedin" role="button" aria-label="Sign in with LinkedIn" data-provider="linkedin" tabindex="0"></a>
+                    <a href="#" class="icon github" role="button" aria-label="Sign in with GitHub" data-provider="github" tabindex="0"></a>
+                    <a href="#" class="icon facebook" role="button" aria-label="Sign in with Facebook" data-provider="facebook" tabindex="0"></a>
+                </div>
+                <span>or use your email for registration</span>
+                <input type="text" id="signupName" placeholder="Name" required autocomplete="name">
+                <input type="email" id="signupEmail" placeholder="Email" required autocomplete="email">
+                <input type="password" id="signupPassword" placeholder="Password" required autocomplete="new-password">
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+
+        <div class="form-container sign-in">
+            <form id="signInForm">
+                <div class="logo-container">
+                    <img src="images/mit.png" alt="Logo" class="logo">
+                    <h1>Sign In</h1>
+                </div>
+                <div class="social-icons" aria-label="social sign in options">
+                    <a href="#" class="icon google" role="button" aria-label="Sign in with Google" data-provider="google" tabindex="0"></a>
+                    <a href="#" class="icon linkedin" role="button" aria-label="Sign in with LinkedIn" data-provider="linkedin" tabindex="0"></a>
+                    <a href="#" class="icon github" role="button" aria-label="Sign in with GitHub" data-provider="github" tabindex="0"></a>
+                    <a href="#" class="icon facebook" role="button" aria-label="Sign in with Facebook" data-provider="facebook" tabindex="0"></a>
+                </div>
+                <span>or use your email password</span>
+                <input type="email" id="email" placeholder="Email" required autocomplete="email">
+                <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+                <a href="#">Forget Your Password?</a>
+                <button type="submit">Sign In</button>
+            </form>
+        </div>
+
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Enter your personal details to become a registered member of our site.</p>
+                    <button class="hidden" id="signIn">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Hello, Users !!</h1>
+                    <p>Enter your personal details, credentials to use all of the site's features.</p>
+                    <button class="hidden" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Identity Services Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <!-- Your app script -->
+    <script src="js/script.js"></script>
+
+    <!-- Google Identity Configuration -->
+    <script>
+        window.GOOGLE_CLIENT_ID = "488982088796-tn18otp49ta7qju1cm93bmd187d4eiab.apps.googleusercontent.com";
+        
+        // Global callback for Google Sign-In
+        window.handleGoogleSignIn = async function(response) {
+            if (!response?.credential) {
+                console.warn('No credential returned by Google');
+                return;
+            }
+            
+            try {
+                const res = await fetch('http://localhost:5000/api/users/google-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: response.credential })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    localStorage.setItem('userToken', data.token);
+                    localStorage.setItem('userName', data.name);
+                    window.location.href = 'main.html';
+                } else {
+                    alert(data.message || 'Google sign-in failed');
+                }
+            } catch (err) {
+                console.error('Google sign-in error:', err);
+                alert('Network error during Google sign-in');
+            }
+        };
+
+        // Prevent auto-prompts on page load
+        window.addEventListener('load', () => {
+            if (window.google && google.accounts) {
+                try {
+                    google.accounts.id.disableAutoSelect();
+                } catch (err) {
+                    console.log('Auto-select already disabled or not available');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

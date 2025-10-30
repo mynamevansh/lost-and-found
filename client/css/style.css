@@ -19,46 +19,41 @@ body {
     position: relative;
 }
 
+.stars, .shooting-stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
 .star {
-    position: absolute;
+    position: fixed;
     width: 3px;
     height: 3px;
-    background: white;
+    background-color: white;
     border-radius: 50%;
-    animation: twinkle 1s infinite ease-in-out;
+    animation: twinkle 1.5s infinite ease-in-out;
+    z-index: -1;
 }
-
-@keyframes twinkle {
-    0%, 100% {
-        opacity: 0.5;
-    }
-    50% {
-        opacity: 1;
-    }
-}
-
 .shooting-star {
-    position: absolute;
+    position: fixed;
     width: 2px;
     height: 2px;
-    background: white;
+    background-color: white;
     border-radius: 50%;
-    animation: shoot 1.5s ease-in-out infinite;
+    animation: shoot 2s infinite ease-in-out;
+    z-index: -1;
 }
-
+@keyframes twinkle {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
 @keyframes shoot {
-    0% {
-        transform: translate(0, 0) scale(1);
-        opacity: 1;
-    }
-    70% {
-        transform: translate(300px, 300px) scale(2);
-        opacity: 0.5;
-    }
-    100% {
-        transform: translate(500px, 500px) scale(0);
-        opacity: 0;
-    }
+    0% { transform: translate(0, 0); opacity: 1; }
+    100% { transform: translate(100px, 100px); opacity: 0; }
 }
 
 .logo-container {
@@ -66,7 +61,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-bottom: 1rem;
+    margin-right: 1rem;
 }
 
 .logo {
@@ -75,6 +70,7 @@ body {
     border-radius: 50%;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .logo:hover {
     transform: scale(1.3);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -160,7 +156,6 @@ body {
     left: 0;
     width: 50%;
     z-index: 2;
-    transition: all 0.6s ease-in-out;
 }
 
 .container.active .sign-in {
@@ -172,24 +167,12 @@ body {
     width: 50%;
     opacity: 0;
     z-index: 1;
-    transition: all 0.6s ease-in-out;
 }
 
 .container.active .sign-up {
     transform: translateX(100%);
     opacity: 1;
     z-index: 5;
-}
-
-@keyframes move {
-    0%, 49.99% {
-        opacity: 0;
-        z-index: 1;
-    }
-    50%, 100% {
-        opacity: 1;
-        z-index: 5;
-    }
 }
 
 .social-icons {
@@ -213,21 +196,23 @@ body {
     background-position: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .social-icons a:hover {
     transform: scale(1.1);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
+
 .social-icons a.google {
-    background-image: url('google.png');
+    background-image: url('../images/google.png');
 }
 .social-icons a.linkedin {
-    background-image: url('linkedin.png');
+    background-image: url('../images/linkedin.png');
 }
 .social-icons a.github {
-    background-image: url('github.png');
+    background-image: url('../images/github.png');
 }
 .social-icons a.facebook {
-    background-image: url('facebook.png');
+    background-image: url('../images/facebook.png');
 }
 
 .toggle-container {
@@ -280,9 +265,11 @@ body {
 .container.active .toggle {
     transform: translateX(50%);
 }
+
 .container.active .toggle-left {
     transform: translateX(0);
 }
+
 .container.active .toggle-right {
     transform: translateX(200%);
 }
@@ -303,7 +290,6 @@ body {
 }
 
 .loading-screen {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -331,15 +317,11 @@ body {
     animation: spin 1s linear infinite;
 }
 
-#load{
+#load {
     font-size: 30px;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

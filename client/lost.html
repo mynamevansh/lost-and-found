@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="css/lost.css" />
+  <title>Lost Page</title>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="shooting-stars"></div>
+
+  <h1>"Lost Items"</h1>
+  <div class="lost-container" id="lost-container">
+  </div>
+
+  <div class="form-container">
+    <form class="lost-form" id="lostForm" enctype="multipart/form-data">
+      <h2>Report a Lost Item</h2>
+
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="itemName">Item Lost:</label>
+      <input type="text" id="itemName" name="itemName" required />
+
+      <label for="location">Last Seen:</label>
+      <input type="text" id="location" name="location" required />
+
+      <label for="contactInfo">Contact Info:</label>
+      <input type="text" id="contactInfo" name="contactInfo" required />
+
+      <label for="photo">Upload Photo:</label>
+      <input type="file" id="photo" name="photo" accept="image/*" />
+
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" rows="4" required></textarea>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script src="js/lost.js"></script>
+</body>
+</html>
