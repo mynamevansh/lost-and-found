@@ -93,12 +93,13 @@
                 return res.json();
             })
             .then(data => {
-                if (data.token) {
-                    localStorage.setItem('userToken', data.token);
-                    localStorage.setItem('userName', data.name);
-                    localStorage.setItem('userEmail', data.email);
-                    localStorage.setItem('userId', data._id);
-                    localStorage.setItem('userRole', data.role || 'user');
+                const userData = data.data || data;
+                if (userData.token) {
+                    localStorage.setItem('userToken', userData.token);
+                    localStorage.setItem('userName', userData.name);
+                    localStorage.setItem('userEmail', userData.email);
+                    localStorage.setItem('userId', userData._id);
+                    localStorage.setItem('userRole', userData.role || 'user');
                     window.location.href = 'main.html';
                 } else {
                     alert(data.message || 'Google sign-in failed on backend');

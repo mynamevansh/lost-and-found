@@ -30,8 +30,9 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const response = await fetch('http://localhost:5000/api/items/lost');
             if (!response.ok) throw new Error('Network response was not ok');
-            const items = await response.json();
-            renderItems(items);
+            const result = await response.json();
+            const items = result.data || result;
+            renderItems(Array.isArray(items) ? items : []);
             document.body.classList.add('loaded');
         } catch (error) {
             console.error('❌ Error loading items:', error);
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function createItemElement(item) {
         const token = localStorage.getItem('userToken');
         const currentUserId = localStorage.getItem('userId');
-        const userEmail = localStorage.getItem('userEmail');
+        const userRole = localStorage.getItem('userRole');
         
         const box = document.createElement('div');
         box.className = 'box';
@@ -102,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
             : 'No description provided';
         
         const canDelete = (currentUserId && item.user && item.user.toString() === currentUserId) || 
-                          (userEmail === 'vanshranawat48@gmail.com');
+                          (userRole === 'admin');
 
         textDiv.innerHTML = `
             <h2>${itemName}</h2>
@@ -123,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     e.stopPropagation();
                     if (confirm('Are you sure you want to delete this item?')) {
                         try {
-                            const response = await fetch(`http://localhost:5000/api/items/${item._id}`, {
+                            const response = await fetch(`http://localhost:5000/api/items/lost/${item._id}`, {
                                 method: 'DELETE',
                                 headers: {
                                     'Authorization': `Bearer ${token}`
@@ -173,7 +174,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error(errorData.message || 'Failed to submit item');
             }
 
-            const newItem = await response.json();
+            const result = await response.json();
+            const newItem = result.data || result;
             const itemElement = createItemElement(newItem);
             container.prepend(itemElement);
             form.reset();

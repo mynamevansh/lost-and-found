@@ -60,10 +60,12 @@ signUpForm?.addEventListener("submit", async (e) => {
             return;
         }
 
-        localStorage.setItem("userToken", result.token);
-        localStorage.setItem("userName", result.name);
-        localStorage.setItem("userId", result._id);
-        localStorage.setItem("userRole", result.role || 'user');
+        const userData = result.data || result;
+        localStorage.setItem("userToken", userData.token);
+        localStorage.setItem("userName", userData.name);
+        localStorage.setItem("userId", userData._id);
+        localStorage.setItem("userEmail", userData.email);
+        localStorage.setItem("userRole", userData.role || 'user');
         window.location.href = "main.html";
     } catch (err) {
         console.error("Sign Up error:", err);
@@ -97,10 +99,12 @@ signInForm?.addEventListener("submit", async (e) => {
             return;
         }
 
-        localStorage.setItem("userToken", result.token);
-        localStorage.setItem("userName", result.name);
-        localStorage.setItem("userId", result._id);
-        localStorage.setItem("userRole", result.role || 'user');
+        const userData = result.data || result;
+        localStorage.setItem("userToken", userData.token);
+        localStorage.setItem("userName", userData.name);
+        localStorage.setItem("userId", userData._id);
+        localStorage.setItem("userEmail", userData.email);
+        localStorage.setItem("userRole", userData.role || 'user');
         window.location.href = "main.html";
     } catch (err) {
         console.error("Sign In error:", err);

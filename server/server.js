@@ -1,15 +1,14 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
-const multer = require('multer');
 const path = require('path');
 const dotenv = require('dotenv');
-const fs = require('fs');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { OAuth2Client } = require('google-auth-library');
+const connectDB = require('./config/db');
+const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 dotenv.config();
+
+connectDB();
+
 const app = express();
 
 const corsOptions = {
@@ -36,138 +35,33 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-mongoose.connect(process.env.MONGO_URI, { dbName: 'LostAndFound' })
-    .then(() => console.log('MongoDB connected'))
-    .catch((err) => console.error('MongoDB connection failed:', err.message));
-
-const userSchema = new mongoose.Schema({
-    name: String,
-    email: { type: String, unique: true },
-    password: String
-});
-
-userSchema.methods.matchPassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
-};
-
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-});
-
-const User = mongoose.model('User', userSchema, 'users');
-
-app.post('/api/users/register', async (req, res) => {
-    const { name, email, password } = req.body;
-    try {
-        const userExists = await User.findOne({ email });
-        if (userExists) return res.status(400).json({ message: 'User already exists' });
-
-        const role = email === 'vanshranawat48@gmail.com' ? 'admin' : 'user';
-        const user = await User.create({ name, email, password, role });
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-        res.status(201).json({ _id: user._id, name: user.name, email: user.email, role: user.role, token });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-app.post('/api/users/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        let user = await User.findOne({ email });
-        if (user && await user.matchPassword(password)) {
-            if (email === 'vanshranawat48@gmail.com' && user.role !== 'admin') {
-                user.role = 'admin';
-                await user.save();
-            }
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-            res.json({ _id: user._id, name: user.name, email: user.email, role: user.role, token });
-        } else {
-            res.status(401).json({ message: 'Invalid credentials' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-app.post('/api/users/make-admin', async (req, res) => {
-    const { email, adminSecret } = req.body;
-    try {
-        if (adminSecret !== process.env.ADMIN_SECRET) {
-            return res.status(403).json({ message: 'Invalid admin secret' });
-        }
-        const user = await User.findOneAndUpdate(
-            { email },
-            { role: 'admin' },
-            { new: true }
-        );
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.json({ message: 'User is now an admin', user: { name: user.name, email: user.email, role: user.role } });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-app.post('/api/users/google-login', async (req, res) => {
-    const { token } = req.body;
-    
-    if (!token) {
-        return res.status(400).json({ message: 'Token is required' });
-    }
-    
-    try {
-        const ticket = await googleClient.verifyIdToken({
-            idToken: token,
-            audience: process.env.GOOGLE_CLIENT_ID,
-        });
-        
-        const payload = ticket.getPayload();
-        const { email, name, sub, picture } = payload;
-
-        let user = await User.findOne({ email });
-        if (!user) {
-            const role = email === 'vanshranawat48@gmail.com' ? 'admin' : 'user';
-            user = await User.create({ 
-                name, 
-                email, 
-                password: await bcrypt.hash(sub, 10),
-                role
-            });
-        } else if (email === 'vanshranawat48@gmail.com' && user.role !== 'admin') {
-            user.role = 'admin';
-            await user.save();
-        }
-
-        const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-        
-        res.json({ 
-            _id: user._id, 
-            name: user.name, 
-            email: user.email,
-            role: user.role, 
-            token: jwtToken,
-            picture: picture 
-        });
-    } catch (error) {
-        res.status(401).json({ message: 'Google authentication failed: ' + error.message });
-    }
-});
-
+const userRoutes = require('./routes/userRoutes');
 const itemRoutes = require('./routes/itemRoutes');
+
+app.get('/', (req, res) => {
+    res.json({ 
+        success: true,
+        message: 'Lost & Found API',
+        version: '1.0.0',
+        endpoints: {
+            users: '/api/users',
+            items: '/api/items'
+        }
+    });
+});
+
+app.use('/api/users', userRoutes);
 app.use('/api/items', itemRoutes);
 
+app.use(notFound);
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+});
