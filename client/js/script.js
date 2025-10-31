@@ -60,10 +60,11 @@ signUpForm?.addEventListener("submit", async (e) => {
             return;
         }
 
-        // Redirect immediately after successful registration
         localStorage.setItem("userToken", result.token);
         localStorage.setItem("userName", result.name);
-        window.location.href = "main.html"; // Change to your target page
+        localStorage.setItem("userId", result._id);
+        localStorage.setItem("userRole", result.role || 'user');
+        window.location.href = "main.html";
     } catch (err) {
         console.error("Sign Up error:", err);
         alert("Sign Up failed. Please try again.");
@@ -96,10 +97,11 @@ signInForm?.addEventListener("submit", async (e) => {
             return;
         }
 
-        // Redirect immediately after successful login
         localStorage.setItem("userToken", result.token);
         localStorage.setItem("userName", result.name);
-        window.location.href = "main.html"; // Change to your target page
+        localStorage.setItem("userId", result._id);
+        localStorage.setItem("userRole", result.role || 'user');
+        window.location.href = "main.html";
     } catch (err) {
         console.error("Sign In error:", err);
         alert("Sign In failed. Please try again.");

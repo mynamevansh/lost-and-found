@@ -28,26 +28,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function loadItems() {
         try {
-            console.log('📥 Fetching lost items from backend...');
             const response = await fetch('http://localhost:5000/api/items/lost');
             if (!response.ok) throw new Error('Network response was not ok');
             const items = await response.json();
-            
-            console.log('✅ Received', items.length, 'lost items from backend');
-            console.log('📦 Raw items data:', items);
-            
-            // Log first item structure for debugging
-            if (items.length > 0) {
-                console.log('🔍 First item structure:');
-                console.log('  _id:', items[0]._id);
-                console.log('  itemName:', items[0].itemName);
-                console.log('  location:', items[0].location);
-                console.log('  name:', items[0].name);
-                console.log('  contactInfo:', items[0].contactInfo);
-                console.log('  description:', items[0].description);
-                console.log('  imageUrl:', items[0].imageUrl);
-            }
-            
             renderItems(items);
             document.body.classList.add('loaded');
         } catch (error) {
@@ -65,8 +48,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function createItemElement(item) {
-        console.log('🎨 Creating card for item:', item._id);
-        console.log('  Raw item data:', item);
+        const token = localStorage.getItem('userToken');
+        const currentUserId = localStorage.getItem('userId');
+        const userEmail = localStorage.getItem('userEmail');
         
         const box = document.createElement('div');
         box.className = 'box';
@@ -85,15 +69,12 @@ document.addEventListener('DOMContentLoaded', function () {
             imageDiv.style.backgroundSize = 'cover';
             imageDiv.style.backgroundPosition = 'center';
             imageDiv.style.backgroundRepeat = 'no-repeat';
-            
-            console.log('  🖼️ Image URL:', imageUrl);
         } else {
             imageDiv.style.backgroundColor = '#f0f0f0';
             imageDiv.style.display = 'flex';
             imageDiv.style.alignItems = 'center';
             imageDiv.style.justifyContent = 'center';
             imageDiv.innerHTML = '<span style="color: #999;">No Image Available</span>';
-            console.log('  📷 No image uploaded');
         }
 
         const textDiv = document.createElement('div');
@@ -120,12 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
             ? item.description.trim() 
             : 'No description provided';
         
-        console.log('  📝 Display values:');
-        console.log('    Item Name:', itemName);
-        console.log('    Location:', location);
-        console.log('    Owner:', ownerName);
-        console.log('    Contact:', contactInfo);
-        console.log('    Description:', description.substring(0, 50) + '...');
+        const canDelete = (currentUserId && item.user && item.user.toString() === currentUserId) || 
+                          (userEmail === 'vanshranawat48@gmail.com');
 
         textDiv.innerHTML = `
             <h2>${itemName}</h2>
@@ -133,27 +110,39 @@ document.addEventListener('DOMContentLoaded', function () {
             <p><strong>Owner:</strong> ${ownerName}</p>
             <p><strong>Contact info:</strong> ${contactInfo}</p>
             <p><strong>Description:</strong> ${description}</p>
-            <button class="delete-btn">Delete</button>
+            ${canDelete ? '<button class="delete-btn">Delete</button>' : ''}
         `;
 
         box.appendChild(imageDiv);
         box.appendChild(textDiv);
 
-        box.querySelector('.delete-btn').addEventListener('click', async (e) => {
-            e.stopPropagation();
-            if (confirm('Are you sure you want to delete this item?')) {
-                try {
-                    const response = await fetch(`http://localhost:5000/api/items/${item._id}`, {
-                        method: 'DELETE'
-                    });
-                    if (!response.ok) throw new Error('Failed to delete item');
-                    box.remove();
-                } catch (error) {
-                    console.error('Error deleting item:', error);
-                    alert('Failed to delete item. Please try again.');
-                }
+        if (canDelete) {
+            const deleteBtn = box.querySelector('.delete-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (confirm('Are you sure you want to delete this item?')) {
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/items/${item._id}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                throw new Error(errorData.message || 'Failed to delete item');
+                            }
+                            box.remove();
+                            alert('Item deleted successfully!');
+                        } catch (error) {
+                            console.error('Error deleting item:', error);
+                            alert('Failed to delete item: ' + error.message);
+                        }
+                    }
+                });
             }
-        });
+        }
 
         return box;
     }
@@ -161,17 +150,21 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const formData = new FormData(form);
-        
-        // Debug: Log form data to verify all fields are captured
-        console.log('📝 Submitting Lost Item:');
-        for (let [key, value] of formData.entries()) {
-            console.log(`  ${key}:`, value instanceof File ? `File: ${value.name}` : value);
+        const token = localStorage.getItem('userToken');
+        if (!token) {
+            alert('You must be logged in to report a lost item.');
+            window.location.href = 'index.html';
+            return;
         }
+
+        const formData = new FormData(form);
 
         try {
             const response = await fetch('http://localhost:5000/api/items/lost', {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
                 body: formData
             });
 
@@ -181,16 +174,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const newItem = await response.json();
-            
-            // Debug: Log received item from backend
-            console.log('✅ Item saved successfully:', newItem);
-            console.log('  Item Name:', newItem.itemName);
-            console.log('  Location:', newItem.location);
-            console.log('  Owner:', newItem.name);
-            console.log('  Contact:', newItem.contactInfo);
-            console.log('  Description:', newItem.description);
-            console.log('  Image URL:', newItem.imageUrl);
-            
             const itemElement = createItemElement(newItem);
             container.prepend(itemElement);
             form.reset();

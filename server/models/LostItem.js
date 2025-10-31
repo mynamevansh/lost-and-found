@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const lostItemSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   name: String,
   itemName: String,
   location: String,

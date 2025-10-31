@@ -6,6 +6,7 @@ const fs = require('fs');
 
 const LostItem = require('../models/LostItem');
 const FoundItem = require('../models/FoundItem');
+const { protect } = require('../middleware/authMiddleware');
 
 // Multer storage configuration
 const storage = multer.diskStorage({
@@ -23,13 +24,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// 🔐 (Optional later) Auth middleware placeholder
-// const { protect } = require('../middleware/authMiddleware');
-
-// ================= LOST ITEMS ================= //
-
 // Create Lost Item
-router.post('/lost', upload.single('photo'), async (req, res) => {
+router.post('/lost', protect, upload.single('photo'), async (req, res) => {
   try {
     const { name, itemName, location, contactInfo, description } = req.body;
     
@@ -48,6 +44,7 @@ router.post('/lost', upload.single('photo'), async (req, res) => {
     console.log('  imageUrl:', imageUrl);
 
     const newItem = new LostItem({
+      user: req.user._id,
       name,
       itemName,
       location,
@@ -61,9 +58,9 @@ router.post('/lost', upload.single('photo'), async (req, res) => {
     // Log saved item
     console.log('✅ Lost item saved:', newItem._id);
     
-    // Return item with exact field names frontend expects
     res.status(201).json({
       _id: newItem._id,
+      user: newItem.user,
       name: newItem.name,
       itemName: newItem.itemName,
       location: newItem.location,
@@ -84,9 +81,9 @@ router.get('/lost', async (req, res) => {
   try {
     const items = await LostItem.find().sort({ createdAt: -1 });
     
-    // Transform items to ensure full image URLs and correct field names
     const transformedItems = items.map(item => ({
       _id: item._id,
+      user: item.user,
       name: item.name,
       itemName: item.itemName,
       location: item.location,
@@ -107,10 +104,8 @@ router.get('/lost', async (req, res) => {
   }
 });
 
-// ================= FOUND ITEMS ================= //
-
 // Create Found Item
-router.post('/found', upload.single('photo'), async (req, res) => {
+router.post('/found', protect, upload.single('photo'), async (req, res) => {
   try {
     const { name, itemName, location, contactInfo, description } = req.body;
     
@@ -129,6 +124,7 @@ router.post('/found', upload.single('photo'), async (req, res) => {
     console.log('  imageUrl:', imageUrl);
 
     const newItem = new FoundItem({
+      user: req.user._id,
       name,
       itemName,
       location,
@@ -142,9 +138,9 @@ router.post('/found', upload.single('photo'), async (req, res) => {
     // Log saved item
     console.log('✅ Found item saved:', newItem._id);
     
-    // Return item with exact field names frontend expects
     res.status(201).json({
       _id: newItem._id,
+      user: newItem.user,
       name: newItem.name,
       itemName: newItem.itemName,
       location: newItem.location,
@@ -165,9 +161,9 @@ router.get('/found', async (req, res) => {
   try {
     const items = await FoundItem.find().sort({ createdAt: -1 });
     
-    // Transform items to ensure full image URLs and correct field names
     const transformedItems = items.map(item => ({
       _id: item._id,
+      user: item.user,
       name: item.name,
       itemName: item.itemName,
       location: item.location,
@@ -188,19 +184,33 @@ router.get('/found', async (req, res) => {
   }
 });
 
-// ================= DELETE ITEM (BOTH COLLECTIONS) ================= //
-
-router.delete('/:id', async (req, res) => {
+// Delete Item (Protected Route)
+router.delete('/:id', protect, async (req, res) => {
   const { id } = req.params;
   try {
-    const deletedLost = await LostItem.findByIdAndDelete(id);
-    const deletedFound = await FoundItem.findByIdAndDelete(id);
-
-    if (deletedLost || deletedFound) {
-      res.json({ message: 'Item deleted successfully' });
-    } else {
-      res.status(404).json({ message: 'Item not found' });
+    let item = await LostItem.findById(id);
+    let isLost = true;
+    
+    if (!item) {
+      item = await FoundItem.findById(id);
+      isLost = false;
     }
+
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    if (item.user.toString() !== req.user._id.toString() && req.user.email !== 'vanshranawat48@gmail.com') {
+      return res.status(403).json({ message: 'Not authorized to delete this item' });
+    }
+
+    if (isLost) {
+      await LostItem.findByIdAndDelete(id);
+    } else {
+      await FoundItem.findByIdAndDelete(id);
+    }
+
+    res.json({ message: 'Item deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting item', error: error.message });
   }

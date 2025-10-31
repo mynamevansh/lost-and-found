@@ -70,10 +70,11 @@ app.post('/api/users/register', async (req, res) => {
         const userExists = await User.findOne({ email });
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
-        const user = await User.create({ name, email, password });
+        const role = email === 'vanshranawat48@gmail.com' ? 'admin' : 'user';
+        const user = await User.create({ name, email, password, role });
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-        res.status(201).json({ _id: user._id, name: user.name, email: user.email, token });
+        res.status(201).json({ _id: user._id, name: user.name, email: user.email, role: user.role, token });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -82,13 +83,37 @@ app.post('/api/users/register', async (req, res) => {
 app.post('/api/users/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const user = await User.findOne({ email });
+        let user = await User.findOne({ email });
         if (user && await user.matchPassword(password)) {
+            if (email === 'vanshranawat48@gmail.com' && user.role !== 'admin') {
+                user.role = 'admin';
+                await user.save();
+            }
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-            res.json({ _id: user._id, name: user.name, email: user.email, token });
+            res.json({ _id: user._id, name: user.name, email: user.email, role: user.role, token });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
         }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/api/users/make-admin', async (req, res) => {
+    const { email, adminSecret } = req.body;
+    try {
+        if (adminSecret !== process.env.ADMIN_SECRET) {
+            return res.status(403).json({ message: 'Invalid admin secret' });
+        }
+        const user = await User.findOneAndUpdate(
+            { email },
+            { role: 'admin' },
+            { new: true }
+        );
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json({ message: 'User is now an admin', user: { name: user.name, email: user.email, role: user.role } });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -114,11 +139,16 @@ app.post('/api/users/google-login', async (req, res) => {
 
         let user = await User.findOne({ email });
         if (!user) {
+            const role = email === 'vanshranawat48@gmail.com' ? 'admin' : 'user';
             user = await User.create({ 
                 name, 
                 email, 
-                password: await bcrypt.hash(sub, 10)
+                password: await bcrypt.hash(sub, 10),
+                role
             });
+        } else if (email === 'vanshranawat48@gmail.com' && user.role !== 'admin') {
+            user.role = 'admin';
+            await user.save();
         }
 
         const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -126,7 +156,8 @@ app.post('/api/users/google-login', async (req, res) => {
         res.json({ 
             _id: user._id, 
             name: user.name, 
-            email: user.email, 
+            email: user.email,
+            role: user.role, 
             token: jwtToken,
             picture: picture 
         });
