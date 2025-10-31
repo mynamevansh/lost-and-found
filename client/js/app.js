@@ -25,9 +25,10 @@ function navigateWithLoader(url) {
   const loadingScreen = document.getElementById('loading-screen');
   loadingScreen.classList.add('visible');
   loadingScreen.classList.remove('hidden');
+  
   setTimeout(() => {
     window.location.href = url;
-  }, 1000);
+  }, 1500);
 }
 
 window.addEventListener('load', () => {
@@ -35,5 +36,5 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     loadingScreen.classList.remove('visible');
     loadingScreen.classList.add('hidden');
-  }, 500);
+  }, 800);
 });
