@@ -22,10 +22,18 @@ for (let i = 0; i < shootingStarCount; i++) {
 }
 
 function navigateWithLoader(url) {
-    const loadingScreen = document.getElementById('loading-screen');
-    loadingScreen.classList.remove('hidden');
-
-    setTimeout(() => {
-        window.location.href = url;
-    }, 2000);
+  const loadingScreen = document.getElementById('loading-screen');
+  loadingScreen.classList.add('visible');
+  loadingScreen.classList.remove('hidden');
+  setTimeout(() => {
+    window.location.href = url;
+  }, 1000);
 }
+
+window.addEventListener('load', () => {
+  const loadingScreen = document.getElementById('loading-screen');
+  setTimeout(() => {
+    loadingScreen.classList.remove('visible');
+    loadingScreen.classList.add('hidden');
+  }, 500);
+});

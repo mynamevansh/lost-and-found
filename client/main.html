@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <title>Lost and Found</title>
     <link rel="stylesheet" href="css/style2.css">
 </head>
@@ -12,9 +13,9 @@
         <a href="#" class="found" onclick="navigateWithLoader('found.html')">Found</a>
     </div>    
 
-    <div id="loading-screen" class="loading-screen hidden">
+    <div id="loading-screen" class="loading-screen">
         <div class="loader"></div>
-        <h1>Loading...</h1>
+        <h1 id="load">Loading...</h1>
     </div>
     <script src="js/app.js"></script>
 </body>
