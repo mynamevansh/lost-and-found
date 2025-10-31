@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const form = document.querySelector('.found-form');
     const container = document.querySelector('.found-container');
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    let allItems = [];
 
     async function loadItems() {
         try {
@@ -32,7 +35,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!response.ok) throw new Error('Network response was not ok');
             const result = await response.json();
             const items = result.data || result;
-            renderItems(Array.isArray(items) ? items : []);
+            allItems = Array.isArray(items) ? items : [];
+            applyFilters();
             document.body.classList.add('loaded');
         } catch (error) {
             console.error('❌ Error loading items:', error);
@@ -42,11 +46,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderItems(items) {
         container.innerHTML = '';
+        if (items.length === 0) {
+            container.innerHTML = '<p style="color: #fff; text-align: center; width: 100%; font-size: 1.2rem; margin: 2rem 0;">No items found matching your search.</p>';
+            return;
+        }
         items.forEach(item => {
             const itemElement = createItemElement(item);
             container.appendChild(itemElement);
         });
     }
+
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const sortType = sortSelect.value;
+
+        let filtered = allItems.filter(item => {
+            const itemName = item.itemName || '';
+            return itemName.toLowerCase().includes(searchTerm);
+        });
+
+        if (sortType === 'oldest') {
+            filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        } else if (sortType === 'newest') {
+            filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        } else if (sortType === 'recent') {
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            filtered = filtered.filter(item => new Date(item.createdAt) >= weekAgo);
+            filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+
+        renderItems(filtered);
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    sortSelect.addEventListener('change', applyFilters);
 
     function createItemElement(item) {
         const token = localStorage.getItem('userToken');
@@ -178,8 +212,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const result = await response.json();
             const newItem = result.data || result;
-            const itemElement = createItemElement(newItem);
-            container.prepend(itemElement);
+            allItems.unshift(newItem);
+            applyFilters();
             form.reset();
             
             alert('Found item reported successfully!');

@@ -16,6 +16,52 @@ h1 {
     font-size: 3rem;
     padding-top: 2rem;
 }
+.filter-section {
+    width: 100%;
+    max-width: 1400px;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem auto 0 auto;
+    padding: 0 20px;
+}
+.filter-section input[type="text"] {
+    flex: 1;
+    max-width: 500px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: 2px solid #444;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    outline: none;
+    transition: all 0.3s ease;
+}
+.filter-section input[type="text"]:focus {
+    border-color: #00d4ff;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+.filter-section select {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: 2px solid #444;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+}
+.filter-section select:hover {
+    border-color: #00d4ff;
+    background: #fff;
+}
+.filter-section select:focus {
+    border-color: #00d4ff;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
 .lost-container,
 .lost-form {
     visibility: hidden;
