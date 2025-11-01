@@ -84,8 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function createItemElement(item) {
         const token = localStorage.getItem('userToken');
-        const currentUserId = localStorage.getItem('userId');
-        const userRole = localStorage.getItem('userRole');
+        const loggedInUserEmail = localStorage.getItem('userEmail');
         
         const box = document.createElement('div');
         box.className = 'box';
@@ -138,8 +137,11 @@ document.addEventListener('DOMContentLoaded', function () {
             ? item.description.trim() 
             : 'No description provided';
         
-        const canDelete = (currentUserId && item.user && item.user.toString() === currentUserId) || 
-                          (userRole === 'admin');
+        const isOwner = loggedInUserEmail && item.userEmail && 
+                        loggedInUserEmail.toLowerCase() === item.userEmail.toLowerCase();
+        const isAdmin = loggedInUserEmail && 
+                        loggedInUserEmail.toLowerCase() === 'vanshranawat48@gmail.com';
+        const canDelete = isOwner || isAdmin;
 
         textDiv.innerHTML = `
             <h2>${itemName}</h2>

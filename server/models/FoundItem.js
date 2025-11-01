@@ -6,6 +6,18 @@ const foundItemSchema = new mongoose.Schema({
     ref: 'User', 
     required: [true, 'User reference is required']
   },
+  userId: {
+    type: String,
+    required: [true, 'User ID is required'],
+    index: true
+  },
+  userEmail: {
+    type: String,
+    required: [true, 'User email is required'],
+    lowercase: true,
+    trim: true,
+    index: true
+  },
   name: { 
     type: String, 
     required: [true, 'Finder name is required'],

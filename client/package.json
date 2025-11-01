@@ -4,8 +4,8 @@
   "description": "Lost and Found Client Application",
   "main": "index.html",
   "scripts": {
-    "start": "http-server -p 5500 -o",
-    "dev": "http-server -p 5500"
+    "start": "http-server ./ --cors --port 5500 --log-ip --silent -o",
+    "dev": "http-server ./ --cors --port 5500 --log-ip --silent"
   },
   "keywords": [
     "lost-and-found",
