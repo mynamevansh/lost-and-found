@@ -30,32 +30,24 @@ signInBtn?.addEventListener("click", () => container.classList.remove("active"))
 
 const API_BASE = "https://lost-and-found-9cwe.onrender.com/api/users";
 
-function showSuccessPopup(message, redirectUrl = null, delay = 2000) {
+function showSuccessPopup(message, redirectUrl = null) {
     const popup = document.createElement('div');
     popup.className = 'success-popup';
     popup.innerHTML = `
         <div class="success-popup-content">
-            <div class="success-icon">🎉</div>
-            <h2>${message}</h2>
+            <p>${message}</p>
+            <button class="popup-ok-btn">OK</button>
         </div>
     `;
     document.body.appendChild(popup);
     
-    setTimeout(() => {
-        popup.classList.add('show');
-    }, 10);
-    
-    setTimeout(() => {
-        popup.classList.remove('show');
-        popup.classList.add('hide');
-        
-        setTimeout(() => {
-            popup.remove();
-            if (redirectUrl) {
-                window.location.replace(redirectUrl);
-            }
-        }, 500);
-    }, delay);
+    const okBtn = popup.querySelector('.popup-ok-btn');
+    okBtn.addEventListener('click', () => {
+        popup.remove();
+        if (redirectUrl) {
+            window.location.replace(redirectUrl);
+        }
+    });
 }
 
 const signUpForm = document.getElementById("signUpForm");
@@ -86,7 +78,7 @@ signUpForm?.addEventListener("submit", async (e) => {
 
         signUpForm.reset();
         
-        showSuccessPopup("✅ Registration successful! Please log in to continue.", "index.html", 2500);
+        showSuccessPopup("Registration successful! Please log in to continue.", "index.html");
     } catch (err) {
         console.error("Sign Up error:", err);
         alert("Sign Up failed. Please try again.");
