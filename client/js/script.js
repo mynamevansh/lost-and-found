@@ -1,4 +1,3 @@
-// 🌟 Starry Background Setup
 const starCount = 180;
 const shootingStarCount = 500;
 const body = document.body;
@@ -21,7 +20,6 @@ for (let i = 0; i < shootingStarCount; i++) {
     body.appendChild(shootingStar);
 }
 
-// 📝 UI Controls for Switching Forms
 const container = document.getElementById("container");
 const signUpBtn = document.getElementById("signUp");
 const signInBtn = document.getElementById("signIn");
@@ -30,10 +28,8 @@ const loadingScreen = document.getElementById("loading-screen");
 signUpBtn?.addEventListener("click", () => container.classList.add("active"));
 signInBtn?.addEventListener("click", () => container.classList.remove("active"));
 
-// 🌐 Backend API URL
 const API_BASE = "https://lost-and-found-9cwe.onrender.com/api/users";
 
-// ✉️ Handle Sign Up
 const signUpForm = document.getElementById("signUpForm");
 signUpForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -73,7 +69,6 @@ signUpForm?.addEventListener("submit", async (e) => {
     }
 });
 
-// 🔑 Handle Sign In
 const signInForm = document.getElementById("signInForm");
 signInForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -112,21 +107,14 @@ signInForm?.addEventListener("submit", async (e) => {
     }
 });
 
-// 📚 Selection Handling Logic (merged from content.js)
 document.addEventListener("mouseup", () => {
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
         try {
             const range = selection.getRangeAt(0);
             console.log("Selected text:", range.toString());
-            // Your selection handling logic here
         } catch (err) {
             console.warn("Error getting selection range:", err);
         }
-    } else {
-        //console.warn("No selection or range found.");
     }
 });
-
-// Note: Google Sign-In is now initialized in index.html
-// Click handlers are attached there after GSI loads

@@ -33,23 +33,18 @@ function navigateWithLoader(url) {
         }
     }
 
-    // Small delay to show UI feedback then navigate
     setTimeout(() => {
-        // Use assign so history is preserved
         window.location.assign(url);
     }, 250);
 }
 
-// Ensure loader is hidden once a new page finishes loading
 window.addEventListener('load', () => {
     const loadingScreen = document.getElementById('loading-screen');
     try {
         const navigating = sessionStorage.getItem('navigating');
         if (navigating) {
-            // Clear flag immediately so subsequent loads behave normally
             sessionStorage.removeItem('navigating');
             if (loadingScreen) {
-                // Allow a tiny delay so CSS transition plays smoothly
                 setTimeout(() => {
                     loadingScreen.classList.remove('visible');
                     loadingScreen.classList.add('hidden');
@@ -58,7 +53,6 @@ window.addEventListener('load', () => {
             return;
         }
 
-        // Normal page load (not from navigation)
         if (loadingScreen) {
             setTimeout(() => {
                 loadingScreen.classList.remove('visible');
@@ -67,7 +61,6 @@ window.addEventListener('load', () => {
         }
     } catch (e) {
         console.error('Load handler error:', e);
-        // Fallback: always hide loader on error
         if (loadingScreen) {
             loadingScreen.classList.remove('visible');
             loadingScreen.classList.add('hidden');

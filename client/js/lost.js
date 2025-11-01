@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const imageDiv = document.createElement('div');
         imageDiv.className = 'box-image';
 
-        // Handle image URL - ensure correct path with backend URL
         if (item.imageUrl) {
             const imageUrl = item.imageUrl.startsWith('http') 
                 ? item.imageUrl 
@@ -114,7 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const textDiv = document.createElement('div');
         textDiv.className = 'text-container';
         
-        // Use actual data or fallback only for missing fields
         const itemName = item.itemName && item.itemName.trim() 
             ? item.itemName.trim() 
             : 'Unknown item';
