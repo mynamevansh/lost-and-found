@@ -117,7 +117,7 @@
                     localStorage.setItem('userEmail', userData.email);
                     localStorage.setItem('userId', userData._id);
                     localStorage.setItem('userRole', userData.role || 'user');
-                    window.location.href = 'main.html';
+                    window.location.replace('main.html');
                 } else {
                     alert(data.message || 'Google sign-in failed on backend');
                 }

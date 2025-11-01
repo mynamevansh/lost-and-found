@@ -62,7 +62,7 @@ signUpForm?.addEventListener("submit", async (e) => {
         localStorage.setItem("userId", userData._id);
         localStorage.setItem("userEmail", userData.email);
         localStorage.setItem("userRole", userData.role || 'user');
-        window.location.href = "main.html";
+        window.location.replace("main.html");
     } catch (err) {
         console.error("Sign Up error:", err);
         alert("Sign Up failed. Please try again.");
@@ -100,7 +100,7 @@ signInForm?.addEventListener("submit", async (e) => {
         localStorage.setItem("userId", userData._id);
         localStorage.setItem("userEmail", userData.email);
         localStorage.setItem("userRole", userData.role || 'user');
-        window.location.href = "main.html";
+        window.location.replace("main.html");
     } catch (err) {
         console.error("Sign In error:", err);
         alert("Sign In failed. Please try again.");
