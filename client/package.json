@@ -1,7 +1,7 @@
 {
-  "name": "lost-and-found-client",
+  "name": "lost-and-found-frontend",
   "version": "1.0.0",
-  "description": "Lost and Found Client Application",
+  "description": "Lost and Found Frontend",
   "main": "index.html",
   "scripts": {
     "start": "http-server ./ --cors --port 5500 --log-ip --silent -o",
