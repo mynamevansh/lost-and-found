@@ -22,19 +22,55 @@ for (let i = 0; i < shootingStarCount; i++) {
 }
 
 function navigateWithLoader(url) {
-  const loadingScreen = document.getElementById('loading-screen');
-  loadingScreen.classList.add('visible');
-  loadingScreen.classList.remove('hidden');
-  
-  setTimeout(() => {
-    window.location.href = url;
-  }, 1500);
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('visible');
+        loadingScreen.classList.remove('hidden');
+        try { 
+            sessionStorage.setItem('navigating', '1'); 
+        } catch (e) {
+            console.error('SessionStorage error:', e);
+        }
+    }
+
+    // Small delay to show UI feedback then navigate
+    setTimeout(() => {
+        // Use assign so history is preserved
+        window.location.assign(url);
+    }, 250);
 }
 
+// Ensure loader is hidden once a new page finishes loading
 window.addEventListener('load', () => {
-  const loadingScreen = document.getElementById('loading-screen');
-  setTimeout(() => {
-    loadingScreen.classList.remove('visible');
-    loadingScreen.classList.add('hidden');
-  }, 800);
+    const loadingScreen = document.getElementById('loading-screen');
+    try {
+        const navigating = sessionStorage.getItem('navigating');
+        if (navigating) {
+            // Clear flag immediately so subsequent loads behave normally
+            sessionStorage.removeItem('navigating');
+            if (loadingScreen) {
+                // Allow a tiny delay so CSS transition plays smoothly
+                setTimeout(() => {
+                    loadingScreen.classList.remove('visible');
+                    loadingScreen.classList.add('hidden');
+                }, 150);
+            }
+            return;
+        }
+
+        // Normal page load (not from navigation)
+        if (loadingScreen) {
+            setTimeout(() => {
+                loadingScreen.classList.remove('visible');
+                loadingScreen.classList.add('hidden');
+            }, 150);
+        }
+    } catch (e) {
+        console.error('Load handler error:', e);
+        // Fallback: always hide loader on error
+        if (loadingScreen) {
+            loadingScreen.classList.remove('visible');
+            loadingScreen.classList.add('hidden');
+        }
+    }
 });
