@@ -42,10 +42,9 @@ const registerUser = async (req, res, next) => {
           _id: user._id,
           name: user.name,
           email: user.email,
-          role: user.role,
-          token: generateToken(user._id)
+          role: user.role
         },
-        message: 'User registered successfully'
+        message: 'User registered successfully. Please log in to continue.'
       });
     } else {
       res.status(400);

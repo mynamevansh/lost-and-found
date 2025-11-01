@@ -30,6 +30,34 @@ signInBtn?.addEventListener("click", () => container.classList.remove("active"))
 
 const API_BASE = "https://lost-and-found-9cwe.onrender.com/api/users";
 
+function showSuccessPopup(message, redirectUrl = null, delay = 2000) {
+    const popup = document.createElement('div');
+    popup.className = 'success-popup';
+    popup.innerHTML = `
+        <div class="success-popup-content">
+            <div class="success-icon">🎉</div>
+            <h2>${message}</h2>
+        </div>
+    `;
+    document.body.appendChild(popup);
+    
+    setTimeout(() => {
+        popup.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        popup.classList.remove('show');
+        popup.classList.add('hide');
+        
+        setTimeout(() => {
+            popup.remove();
+            if (redirectUrl) {
+                window.location.replace(redirectUrl);
+            }
+        }, 500);
+    }, delay);
+}
+
 const signUpForm = document.getElementById("signUpForm");
 signUpForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -56,13 +84,9 @@ signUpForm?.addEventListener("submit", async (e) => {
             return;
         }
 
-        const userData = result.data || result;
-        localStorage.setItem("userToken", userData.token);
-        localStorage.setItem("userName", userData.name);
-        localStorage.setItem("userId", userData._id);
-        localStorage.setItem("userEmail", userData.email);
-        localStorage.setItem("userRole", userData.role || 'user');
-        window.location.replace("main.html");
+        signUpForm.reset();
+        
+        showSuccessPopup("✅ Registration successful! Please log in to continue.", "index.html", 2500);
     } catch (err) {
         console.error("Sign Up error:", err);
         alert("Sign Up failed. Please try again.");
