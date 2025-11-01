@@ -11,6 +11,11 @@
   <div class="stars"></div>
   <div class="shooting-stars"></div>
 
+  <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+    <button onclick="goHome()" style="background: rgba(100, 150, 200, 1); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-right: 10px;">Home</button>
+    <button onclick="logout()" style="background: rgba(255, 150, 160, 1); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Logout</button>
+  </div>
+
   <h1>"Found Items"</h1>
   
   <div class="filter-section">
@@ -50,6 +55,32 @@
       <button type="submit">Submit</button>
     </form>
   </div>
+
+  <script>
+    function checkAuth() {
+      const token = localStorage.getItem('userToken');
+      if (!token) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    }
+
+    function logout() {
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userRole');
+      window.location.href = 'index.html';
+    }
+
+    function goHome() {
+      window.location.href = 'main.html';
+    }
+
+    checkAuth();
+  </script>
 
   <script src="js/found.js"></script>
 </body>

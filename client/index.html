@@ -200,6 +200,15 @@
             }, 100);
         };
     </script>
+
+    <script>
+        (function() {
+            const token = localStorage.getItem('userToken');
+            if (token) {
+                window.location.href = 'main.html';
+            }
+        })();
+    </script>
     
     <script src="js/script.js"></script>
 </body>

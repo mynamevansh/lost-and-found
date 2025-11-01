@@ -11,6 +11,10 @@
     <link rel="stylesheet" href="css/style2.css">
 </head>
 <body>
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 100;">
+        <button onclick="logout()" style="background: rgba(255, 150, 160, 1); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Logout</button>
+    </div>
+
     <div class="container">
         <a href="#" class="lost" onclick="navigateWithLoader('lost.html')">Lost</a>
         <a href="#" class="found" onclick="navigateWithLoader('found.html')">Found</a>
@@ -34,6 +38,28 @@
           }
         } catch(e){}
       })();
+    </script>
+
+    <script>
+        function checkAuth() {
+            const token = localStorage.getItem('userToken');
+            if (!token) {
+                window.location.href = 'index.html';
+                return false;
+            }
+            return true;
+        }
+
+        function logout() {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userRole');
+            window.location.href = 'index.html';
+        }
+
+        checkAuth();
     </script>
 
     <script src="js/app.js"></script>
