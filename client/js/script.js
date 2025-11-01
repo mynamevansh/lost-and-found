@@ -31,7 +31,7 @@ signUpBtn?.addEventListener("click", () => container.classList.add("active"));
 signInBtn?.addEventListener("click", () => container.classList.remove("active"));
 
 // 🌐 Backend API URL
-const API_BASE = "http://localhost:5000/api/users";
+const API_BASE = "https://lost-and-found-9cwe.onrender.com/api/users";
 
 // ✉️ Handle Sign Up
 const signUpForm = document.getElementById("signUpForm");

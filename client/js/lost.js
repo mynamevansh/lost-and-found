@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function loadItems() {
         try {
-            const response = await fetch('http://localhost:5000/api/items/lost');
+            const response = await fetch('https://lost-and-found-9cwe.onrender.com/api/items/lost');
             if (!response.ok) throw new Error('Network response was not ok');
             const result = await response.json();
             const items = result.data || result;
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (item.imageUrl) {
             const imageUrl = item.imageUrl.startsWith('http') 
                 ? item.imageUrl 
-                : `http://localhost:5000${item.imageUrl}`;
+                : `https://lost-and-found-9cwe.onrender.com${item.imageUrl}`;
             
             imageDiv.style.backgroundImage = `url('${imageUrl}')`;
             imageDiv.style.backgroundSize = 'cover';
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     e.stopPropagation();
                     if (confirm('Are you sure you want to delete this item?')) {
                         try {
-                            const response = await fetch(`http://localhost:5000/api/items/lost/${item._id}`, {
+                            const response = await fetch(`https://lost-and-found-9cwe.onrender.com/api/items/lost/${item._id}`, {
                                 method: 'DELETE',
                                 headers: {
                                     'Authorization': `Bearer ${token}`
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData(form);
 
         try {
-            const response = await fetch('http://localhost:5000/api/items/lost', {
+            const response = await fetch('https://lost-and-found-9cwe.onrender.com/api/items/lost', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`

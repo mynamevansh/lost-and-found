@@ -5,7 +5,8 @@
   "main": "index.html",
   "scripts": {
     "start": "http-server ./ --cors --port 5500 --log-ip --silent -o",
-    "dev": "http-server ./ --cors --port 5500 --log-ip --silent"
+    "dev": "http-server ./ --cors --port 5500 --log-ip --silent",
+    "build": "echo 'No build step required'"
   },
   "keywords": [
     "lost-and-found",
