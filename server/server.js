@@ -12,18 +12,22 @@ connectDB();
 
 const app = express();
 
-// ✅ Update allowed origins — include your deployed frontend domain (Vercel)
+// ✅ CORS Configuration - Allow Vercel frontend
 const allowedOrigins = [
     'http://localhost:5500',
     'http://127.0.0.1:5500',
-    'https://your-frontend-name.vercel.app' // 🔁 Replace this with your actual Vercel URL
+    'https://lost-and-found-omega.vercel.app'
 ];
 
 const corsOptions = {
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            console.log(`❌ CORS blocked origin: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -59,6 +63,14 @@ app.get('/', (req, res) => {
 
 app.use('/api/users', userRoutes);
 app.use('/api/items', itemRoutes);
+
+// Log all registered routes for debugging
+console.log('📍 Registered routes:');
+console.log('  - POST /api/users/register');
+console.log('  - POST /api/users/login');
+console.log('  - POST /api/users/google-login');
+console.log('  - GET  /api/users/profile');
+console.log('  - POST /api/users/make-admin');
 
 // Error handlers
 app.use(notFound);

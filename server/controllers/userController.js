@@ -91,13 +91,16 @@ const loginUser = async (req, res, next) => {
 
 const googleLogin = async (req, res, next) => {
   try {
+    console.log('🔵 Google login request received');
     const { token } = req.body;
 
     if (!token) {
+      console.log('❌ No token provided');
       res.status(400);
       return next(new Error('Token is required'));
     }
 
+    console.log('🔍 Verifying Google token...');
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID
@@ -105,6 +108,7 @@ const googleLogin = async (req, res, next) => {
 
     const payload = ticket.getPayload();
     const { email, name, sub: googleId } = payload;
+    console.log(`✅ Token verified for user: ${email}`);
 
     let user = await User.findOne({ email });
 
